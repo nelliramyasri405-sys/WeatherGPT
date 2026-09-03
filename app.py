@@ -561,6 +561,15 @@ html, body, [class*="css"] {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Custom Pointer Cursors */
+html, body, button, input, select, textarea, [role="button"], a {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300f2fe' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important;
+}
+
+button:hover, [role="button"]:hover, a:hover, select:hover {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='%2300f2fe' stroke='%2374ebd5' stroke-width='1.5'%3E%3Ccircle cx='12' cy='12' r='8' fill-opacity='0.3'/%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), pointer !important;
+}
+
 /* App Background: Rich Mesh Gradient */
 .stApp {
     background: radial-gradient(circle at 15% 15%, #1a103c 0%, #0d0b1e 50%, #05040a 100%);
@@ -774,6 +783,73 @@ html, body, [class*="css"] {
     border-top-color: #00f2fe !important;
 }
 </style>
+
+<script>
+(function() {
+    if (window.cursorInitialized) return;
+    window.cursorInitialized = true;
+
+    // Create glowing dot follower
+    const dot = document.createElement('div');
+    dot.id = 'glow-cursor-dot';
+    dot.style.cssText = `
+        position: fixed;
+        width: 14px;
+        height: 14px;
+        background: radial-gradient(circle, #00f2fe 0%, #74ebd5 70%, transparent 100%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 999999;
+        transform: translate(-50%, -50%);
+        transition: transform 0.08s ease-out;
+        box-shadow: 0 0 15px #00f2fe, 0 0 30px #00f2fe;
+    `;
+    document.body.appendChild(dot);
+
+    let mouseX = -100, mouseY = -100;
+
+    window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        dot.style.left = mouseX + 'px';
+        dot.style.top = mouseY + 'px';
+    });
+
+    // Touchscreen Ripple Effect
+    window.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 0) {
+            const touch = e.touches[0];
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: fixed;
+                left: ${touch.clientX}px;
+                top: ${touch.clientY}px;
+                width: 12px;
+                height: 12px;
+                border: 2px solid #00f2fe;
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 999999;
+                transform: translate(-50%, -50%) scale(1);
+                animation: touchRipple 0.5s ease-out forwards;
+                box-shadow: 0 0 12px #00f2fe;
+            `;
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 500);
+        }
+    });
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes touchRipple {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+})();
+</script>
+""",StartLine:778,TargetContent:
 """, unsafe_allow_html=True)
 
 
