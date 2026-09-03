@@ -61,6 +61,7 @@ except ImportError:
 # Or create a file called ".env" in this folder with the line:
 #   ANTHROPIC_API_KEY=sk-ant-your-key-here
 
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
@@ -677,6 +678,82 @@ def chat_with_openai(conversation_history: list) -> str:
         return assistant_text
 
 
+def chat_with_groq(conversation_history: list) -> str:
+    """
+    Sends the conversation to Groq Cloud (Free & High Speed) and handles tool calling.
+    """
+    try:
+        from openai import OpenAI
+    except ImportError:
+        print("\n❌ ERROR: The 'openai' library is not installed.")
+        print("   Run: pip install openai")
+        sys.exit(1)
+
+    key = GROQ_API_KEY or (ANTHROPIC_API_KEY if (ANTHROPIC_API_KEY and ANTHROPIC_API_KEY.startswith("gsk_")) else "")
+    client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
+
+    messages_with_system = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_history
+
+    response = client.chat.completions.create(
+        model="qwen/qwen3.6-27b",
+        max_tokens=1024,
+        tools=OPENAI_TOOLS,
+        messages=messages_with_system,
+    )
+
+    message = response.choices[0].message
+
+    if message.tool_calls:
+        conversation_history.append({
+            "role": "assistant",
+            "content": message.content,
+            "tool_calls": [
+                {
+                    "id": tc.id,
+                    "type": "function",
+                    "function": {
+                        "name": tc.function.name,
+                        "arguments": tc.function.arguments,
+                    },
+                }
+                for tc in message.tool_calls
+            ],
+        })
+
+        for tool_call in message.tool_calls:
+            tool_name = tool_call.function.name
+            tool_args = json.loads(tool_call.function.arguments)
+
+            print(f"\n  🔧 LLM is calling tool: {tool_name}({tool_args})")
+
+            if tool_name in AVAILABLE_TOOLS:
+                tool_result = AVAILABLE_TOOLS[tool_name](**tool_args)
+            else:
+                tool_result = json.dumps({"error": f"Unknown tool: {tool_name}"})
+
+            conversation_history.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": tool_result,
+            })
+
+        messages_with_system = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_history
+        final_response = client.chat.completions.create(
+            model="qwen/qwen3.6-27b",
+            max_tokens=1024,
+            tools=OPENAI_TOOLS,
+            messages=messages_with_system,
+        )
+
+        assistant_text = final_response.choices[0].message.content or ""
+        conversation_history.append({"role": "assistant", "content": assistant_text})
+        return assistant_text
+    else:
+        assistant_text = message.content or ""
+        conversation_history.append({"role": "assistant", "content": assistant_text})
+        return assistant_text
+
+
 # ============================================================================
 # MAIN — The command-line chat loop
 # ============================================================================
@@ -688,11 +765,15 @@ def main():
     """
 
     # ---- Detect which LLM provider to use ----
-    if ANTHROPIC_API_KEY:
+    if (GROQ_API_KEY and not GROQ_API_KEY.startswith("your-")) or (ANTHROPIC_API_KEY and ANTHROPIC_API_KEY.startswith("gsk_")):
+        provider = "groq"
+        provider_name = "Groq AI (Free & Fast)"
+        chat_function = chat_with_groq
+    elif ANTHROPIC_API_KEY and not ANTHROPIC_API_KEY.startswith("your-"):
         provider = "anthropic"
         provider_name = "Anthropic Claude"
         chat_function = chat_with_anthropic
-    elif OPENAI_API_KEY:
+    elif OPENAI_API_KEY and not OPENAI_API_KEY.startswith("your-"):
         provider = "openai"
         provider_name = "OpenAI GPT"
         chat_function = chat_with_openai

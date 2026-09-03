@@ -59,6 +59,7 @@ def get_api_key(key_name: str) -> str:
 
 ANTHROPIC_API_KEY = get_api_key("ANTHROPIC_API_KEY")
 OPENAI_API_KEY    = get_api_key("OPENAI_API_KEY")
+GROQ_API_KEY      = get_api_key("GROQ_API_KEY")
 
 
 # ============================================================================
@@ -427,6 +428,62 @@ def chat_with_openai(conversation_history: list, status_callback=None) -> str:
         conversation_history.append({"role": "assistant", "content": text})
         return text
 
+GROQ_API_KEY = get_api_key("GROQ_API_KEY")
+
+
+def chat_with_groq(conversation_history: list, status_callback=None) -> str:
+    """
+    Sends conversation to Groq Cloud (High-speed free AI engine), handles tool calling,
+    and returns the final text response.
+    """
+    from openai import OpenAI
+    key = GROQ_API_KEY or (ANTHROPIC_API_KEY if ANTHROPIC_API_KEY.startswith("gsk_") else "")
+    client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_history
+
+    response = client.chat.completions.create(
+        model="qwen/qwen3.6-27b", max_tokens=1024, tools=OPENAI_TOOLS, messages=messages
+    )
+    message = response.choices[0].message
+
+    if message.tool_calls:
+        conversation_history.append({
+            "role": "assistant",
+            "content": message.content,
+            "tool_calls": [
+                {"id": tc.id, "type": "function",
+                 "function": {"name": tc.function.name, "arguments": tc.function.arguments}}
+                for tc in message.tool_calls
+            ],
+        })
+
+        for tc in message.tool_calls:
+            args = json.loads(tc.function.arguments)
+            if status_callback:
+                status_callback(f"🔍 Fetching real weather data for **{args.get('city_name', '...')}**...")
+
+            result = AVAILABLE_TOOLS[tc.function.name](**args) \
+                     if tc.function.name in AVAILABLE_TOOLS \
+                     else json.dumps({"error": f"Unknown tool: {tc.function.name}"})
+
+            conversation_history.append({"role": "tool", "tool_call_id": tc.id, "content": result})
+
+        if status_callback:
+            status_callback("✍️ Generating your weather summary...")
+
+        messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_history
+        final = client.chat.completions.create(
+            model="qwen/qwen3.6-27b", max_tokens=1024, tools=OPENAI_TOOLS, messages=messages
+        )
+        text = final.choices[0].message.content or ""
+        conversation_history.append({"role": "assistant", "content": text})
+        return text
+
+    else:
+        text = message.content or ""
+        conversation_history.append({"role": "assistant", "content": text})
+        return text
+
 
 # ============================================================================
 # DETECT LLM PROVIDER
@@ -434,7 +491,9 @@ def chat_with_openai(conversation_history: list, status_callback=None) -> str:
 
 def get_chat_function():
     """Returns the correct chat function based on available API key."""
-    if ANTHROPIC_API_KEY and not ANTHROPIC_API_KEY.startswith("your-"):
+    if (GROQ_API_KEY and not GROQ_API_KEY.startswith("your-")) or ANTHROPIC_API_KEY.startswith("gsk_"):
+        return chat_with_groq, "Groq AI (Free & Fast)"
+    elif ANTHROPIC_API_KEY and not ANTHROPIC_API_KEY.startswith("your-"):
         return chat_with_anthropic, "Anthropic Claude"
     elif OPENAI_API_KEY and not OPENAI_API_KEY.startswith("your-"):
         return chat_with_openai, "OpenAI GPT"
@@ -725,7 +784,13 @@ if user_input:
             except Exception as e:
                 error_msg = str(e)
                 # Friendly error messages based on error type
-                if "401" in error_msg or "auth" in error_msg.lower() or "invalid" in error_msg.lower():
+                if "credit balance" in error_msg.lower() or "balance" in error_msg.lower():
+                    response_text = (
+                        "💳 **Credit balance too low.** Your Anthropic account has 0 credits. "
+                        "Please go to [console.anthropic.com/settings/plans](https://console.anthropic.com/settings/plans) to add credits, "
+                        "or switch to an OpenAI key in your `.env` file."
+                    )
+                elif "401" in error_msg or "auth" in error_msg.lower() or "invalid" in error_msg.lower():
                     response_text = (
                         "❌ **Authentication failed.** Your API key appears to be invalid or expired. "
                         "Please update it in your `.env` file and restart the app."
