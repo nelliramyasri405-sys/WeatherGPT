@@ -1,0 +1,38 @@
+# ============================================================
+# WeatherGPT — Git Ignore Rules
+# ============================================================
+# This file tells Git which files to NEVER commit/upload.
+# Most importantly: your .env file with real API keys!
+# ============================================================
+
+# --- SECRET FILES (NEVER commit these) ---
+.env
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Virtual Environment ---
+venv/
+env/
+.venv/
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS files ---
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# --- Distribution / Packaging ---
+dist/
+build/
+*.egg-info/
+*.egg
