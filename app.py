@@ -886,17 +886,15 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Multilingual Language Selector synced with Top Bar
-    current_index = list(LANG_MAP.keys()).index(st.session_state.selected_language) if st.session_state.selected_language in LANG_MAP else 0
-    sidebar_lang = st.selectbox(
-        "🌐 Voice & Language Output",
-        options=list(LANG_MAP.keys()),
-        index=current_index,
-        key="sidebar_lang_select"
-    )
-    if sidebar_lang != st.session_state.selected_language:
-        st.session_state.selected_language = sidebar_lang
-        st.rerun()
+    # Show current language selection (controlled by main area radio)
+    active_lang = st.session_state.selected_language
+    st.markdown(f"""
+    <div style='background:rgba(0,242,254,0.08); border:1px solid rgba(0,242,254,0.2); border-radius:12px; padding:10px 14px; margin-bottom:8px;'>
+        <div style='font-size:0.75rem; color:rgba(255,255,255,0.5); margin-bottom:4px;'>🌐 Active Language</div>
+        <div style='font-size:1rem; font-weight:700; color:#74ebd5;'>{active_lang}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.caption("Change language using the radio buttons in the main area.")
 
     # Voice TTS Toggle
     enable_voice = st.toggle("🔊 Enable Audio Speech Assistant", value=True)
@@ -952,29 +950,32 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Top Bar Language Switcher
-st.markdown("<div style='font-size:0.85rem; font-weight:700; color:rgba(255,255,255,0.9); margin-bottom:8px;'>🌐 Language / భాష / भाषा:</div>", unsafe_allow_html=True)
-lcol1, lcol2, lcol3 = st.columns(3)
+# Top Bar Language Switcher — using st.radio for reliable state sync
+lang_options = list(LANG_MAP.keys())
+current_lang_idx = lang_options.index(st.session_state.selected_language) if st.session_state.selected_language in lang_options else 0
 
-with lcol1:
-    btn_style_en = "primary" if st.session_state.selected_language == "English" else "secondary"
-    if st.button("🇬🇧 English", key="top_lang_en"):
-        st.session_state.selected_language = "English"
-        st.rerun()
+selected_lang_radio = st.radio(
+    "🌐 Language / భాష / भाषा",
+    options=lang_options,
+    index=current_lang_idx,
+    horizontal=True,
+    key="main_lang_radio",
+    label_visibility="visible"
+)
 
-with lcol2:
-    btn_style_te = "primary" if st.session_state.selected_language == "Telugu (తెలుగు)" else "secondary"
-    if st.button("🇮🇳 Telugu (తెలుగు)", key="top_lang_te"):
-        st.session_state.selected_language = "Telugu (తెలుగు)"
-        st.rerun()
+# If user changed language via radio, update state and rerun
+if selected_lang_radio != st.session_state.selected_language:
+    st.session_state.selected_language = selected_lang_radio
+    st.rerun()
 
-with lcol3:
-    btn_style_hi = "primary" if st.session_state.selected_language == "Hindi (हिंदी)" else "secondary"
-    if st.button("🇮🇳 Hindi (हिंदी)", key="top_lang_hi"):
-        st.session_state.selected_language = "Hindi (हिंदी)"
-        st.rerun()
+# Re-read current language variables after possible rerun
+lang_code, lang_inst, placeholder_txt = LANG_MAP[st.session_state.selected_language]
 
-st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+# Show active language confirmation badge
+lang_labels = {"English": "🇬🇧 English Active", "Telugu (తెలుగు)": "🇮🇳 తెలుగు సక్రియం", "Hindi (हिंदी)": "🇮🇳 हिंदी सक्रिय"}
+st.markdown(f"<div style='display:inline-block; background:rgba(0,242,254,0.12); border:1px solid rgba(0,242,254,0.3); border-radius:20px; padding:4px 14px; font-size:0.8rem; color:#74ebd5; font-weight:600; margin-bottom:12px;'>✅ {lang_labels.get(st.session_state.selected_language, st.session_state.selected_language)}</div>", unsafe_allow_html=True)
+
+st.markdown("<div style='height: 6px;'></div>", unsafe_allow_html=True)
 
 # Render Simulated Emergency Alert (if active)
 if st.session_state.get("active_alert") == "CYCLONE":
