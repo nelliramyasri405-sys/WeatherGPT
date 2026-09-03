@@ -514,113 +514,214 @@ st.set_page_config(
 
 
 # ============================================================================
-# CUSTOM CSS — Premium look with smooth animations
+# CUSTOM CSS — World-Class SIH 2026 Glassmorphic Interface
 # ============================================================================
 
 st.markdown("""
 <style>
-/* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Import Google Fonts: Outfit for Titles, Inter for Body */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Global font */
+/* Global Font Base */
 html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Main background gradient */
+/* App Background: Rich Mesh Gradient */
 .stApp {
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background: radial-gradient(circle at 15% 15%, #1a103c 0%, #0d0b1e 50%, #05040a 100%);
     min-height: 100vh;
 }
 
-/* Chat message bubbles */
-[data-testid="stChatMessage"] {
-    background: rgba(255, 255, 255, 0.06);
-    border-radius: 16px;
+/* Header Container */
+.main-header {
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
-    margin-bottom: 12px;
-    padding: 4px 8px;
-    animation: fadeInUp 0.3s ease;
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    animation: fadeInDown 0.5s ease-out;
 }
 
-/* Fade-in animation for messages */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px); }
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-15px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Chat input box */
-[data-testid="stChatInput"] textarea {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 12px !important;
-    color: white !important;
-    font-family: 'Inter', sans-serif !important;
-}
-
-/* Sidebar styling */
-[data-testid="stSidebar"] {
-    background: rgba(15, 12, 41, 0.85) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
-
-/* Title */
-h1 {
-    background: linear-gradient(90deg, #74ebd5, #acb6e5);
+.brand-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.4rem !important;
+    font-weight: 800 !important;
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #00c6ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-weight: 700 !important;
-    font-size: 2rem !important;
-    margin-bottom: 0.25rem !important;
+    letter-spacing: -0.5px;
+    margin: 0 !important;
+    display: inline-block;
 }
 
-/* Subtitle */
-h1 + p {
-    color: rgba(255,255,255,0.55) !important;
-    font-size: 0.9rem !important;
+.brand-subtitle {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.95rem;
+    margin-top: 0.3rem;
+    font-weight: 400;
 }
 
-/* General text */
-p, li, span, label {
-    color: rgba(255, 255, 255, 0.85) !important;
+/* Category Badge Pills */
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    border-radius: 30px;
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #74ebd5;
+    margin-right: 6px;
+    margin-top: 8px;
 }
 
-/* Divider */
-hr {
-    border-color: rgba(255,255,255,0.1) !important;
+/* Chat Message Bubbles */
+[data-testid="stChatMessage"] {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 18px !important;
+    backdrop-filter: blur(16px) !important;
+    margin-bottom: 14px !important;
+    padding: 1rem 1.25rem !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25) !important;
+    animation: fadeInUp 0.35s ease-out !important;
 }
 
-/* Spinner */
-.stSpinner > div {
-    border-top-color: #74ebd5 !important;
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+    border-left: 3px solid #4facfe !important;
+    background: rgba(79, 172, 254, 0.06) !important;
 }
 
-/* Example question buttons */
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
+    border-left: 3px solid #00f2fe !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Chat Input Styling */
+[data-testid="stChatInput"] textarea {
+    background: rgba(20, 18, 45, 0.75) !important;
+    border: 1px solid rgba(0, 242, 254, 0.25) !important;
+    border-radius: 16px !important;
+    color: #ffffff !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.95rem !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.25s ease !important;
+}
+
+[data-testid="stChatInput"] textarea:focus {
+    border-color: #00f2fe !important;
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.3) !important;
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background: rgba(12, 10, 28, 0.95) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(25px) !important;
+}
+
+/* Prompt Card Buttons */
 .stButton > button {
     width: 100%;
-    background: rgba(255,255,255,0.06) !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
-    border-radius: 10px !important;
-    color: rgba(255,255,255,0.85) !important;
-    font-size: 0.82rem !important;
-    padding: 0.5rem 0.75rem !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    padding: 0.65rem 0.9rem !important;
     text-align: left !important;
-    transition: all 0.2s ease !important;
-    margin-bottom: 4px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin-bottom: 6px !important;
     font-family: 'Inter', sans-serif !important;
 }
+
 .stButton > button:hover {
-    background: rgba(116, 235, 213, 0.12) !important;
-    border-color: rgba(116, 235, 213, 0.35) !important;
-    transform: translateX(3px) !important;
+    background: rgba(0, 242, 254, 0.12) !important;
+    border-color: rgba(0, 242, 254, 0.4) !important;
+    color: #ffffff !important;
+    transform: translateX(4px) scale(1.01) !important;
+    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.15) !important;
 }
 
-/* Info/warning boxes */
-.stAlert {
-    border-radius: 10px !important;
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
+/* Status Cards & Banners */
+.status-connected {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 8px 14px;
+    color: #34d399;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Architecture Callout Box */
+.arch-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin-top: 10px;
+}
+
+/* Hero Feature Cards */
+.hero-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.25rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.hero-card:hover {
+    background: rgba(0, 242, 254, 0.05);
+    border-color: rgba(0, 242, 254, 0.25);
+    transform: translateY(-3px);
+}
+
+.hero-icon {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+}
+
+.hero-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.hero-desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Spinner Customisation */
+.stSpinner > div {
+    border-top-color: #00f2fe !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -631,68 +732,66 @@ hr {
 # ============================================================================
 
 with st.sidebar:
-    st.markdown("## 🌤️ WeatherGPT")
-    st.markdown("**AI Weather Assistant for India**")
-    st.markdown("---")
+    st.markdown("""
+    <div style='margin-bottom: 12px;'>
+        <div style='font-family: "Outfit", sans-serif; font-size: 1.5rem; font-weight: 800; color: #ffffff;'>
+            🌤️ WeatherGPT
+        </div>
+        <div style='font-size: 0.8rem; color: rgba(255,255,255,0.5);'>
+            SIH 2026 Problem Submission
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Check API key status
     chat_fn, provider_name = get_chat_function()
 
     if chat_fn:
-        st.success(f"✅ Connected to {provider_name}")
+        st.markdown(f"""
+        <div class="status-connected">
+            <span style="font-size:10px;">🟢</span> {provider_name} Connected
+        </div>
+        """, unsafe_allow_html=True)
     else:
-        st.error("❌ No API key found")
-        st.markdown("""
-        **To fix:**
-        Open your `.env` file and paste your API key:
-        ```
-        ANTHROPIC_API_KEY=sk-ant-...
-        ```
-        """)
+        st.error("❌ No API Key Found")
 
     st.markdown("---")
 
-    # App info
-    st.markdown("""
-    **How it works:**
-    1. You ask a weather question
-    2. AI understands your intent
-    3. Real data fetched from Open-Meteo
-    4. AI explains the data in plain language
-
-    > 🔒 **Data Integrity:**
-    > All weather numbers come from
-    > the Open-Meteo API — never
-    > invented by the AI.
-    """)
-
-    st.markdown("---")
-
-    # Example questions as clickable buttons
-    st.markdown("**💬 Try asking:**")
-    example_questions = [
-        "Will it rain in Vizianagaram tomorrow?",
-        "What's the weather in Mumbai right now?",
-        "Should I carry an umbrella in Chennai today?",
-        "Is it good weather to sow paddy in Guntur?",
-        "What's the 3-day forecast for New Delhi?",
-        "How hot is it in Hyderabad today?",
+    # Interactive Quick Prompts by Category
+    st.markdown("<div style='font-size:0.85rem; font-weight:700; color:rgba(255,255,255,0.9); margin-bottom:8px;'>🌾 Farmer & Agriculture</div>", unsafe_allow_html=True)
+    agri_prompts = [
+        "Should I sow paddy this week in Vizianagaram?",
+        "Is there rain risk for harvesting in Guntur?",
     ]
+    for q in agri_prompts:
+        if st.button(q, key=f"ex_{q[:15]}"):
+            st.session_state.example_clicked = q
 
-    # Store which example was clicked (if any)
-    if "example_clicked" not in st.session_state:
-        st.session_state.example_clicked = None
-
-    for q in example_questions:
-        if st.button(q, key=f"ex_{q[:20]}"):
+    st.markdown("<div style='font-size:0.85rem; font-weight:700; color:rgba(255,255,255,0.9); margin-top:12px; margin-bottom:8px;'>🌧️ General & Travel</div>", unsafe_allow_html=True)
+    travel_prompts = [
+        "Will it rain in Chennai tomorrow?",
+        "What's the weather in Mumbai right now?",
+        "What's the 3-day forecast for New Delhi?",
+    ]
+    for q in travel_prompts:
+        if st.button(q, key=f"ex_{q[:15]}"):
             st.session_state.example_clicked = q
 
     st.markdown("---")
+
+    # Architecture Callout
     st.markdown("""
-    <div style='font-size:0.75rem; color:rgba(255,255,255,0.35);'>
-    WeatherGPT · SIH 2026<br>
-    Data: Open-Meteo API (free, real-time)<br>
-    Forecast: Current + 3 days
+    <div class="arch-box">
+        <strong style="color:#74ebd5;">🔒 Core Credibility Rule:</strong><br>
+        The LLM <em>never</em> invents forecast numbers. 100% of temperatures, rain, and wind metrics are fetched live from Open-Meteo meteorological APIs.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("""
+    <div style='font-size:0.72rem; color:rgba(255,255,255,0.35); text-align:center;'>
+        WeatherGPT · Smart India Hackathon 2026<br>
+        Open-Meteo Real-Time Data Pipeline
     </div>
     """, unsafe_allow_html=True)
 
@@ -701,136 +800,124 @@ with st.sidebar:
 # MAIN CHAT AREA
 # ============================================================================
 
-# Title
-st.markdown("# 🌤️ WeatherGPT")
-st.markdown("Your AI weather assistant — powered by real data, never guesswork.")
-st.markdown("---")
+# Header Banner
+st.markdown("""
+<div class="main-header">
+    <div class="brand-title">🌤️ WeatherGPT</div>
+    <div class="brand-subtitle">Conversational Weather Intelligence Platform for Farmers, Disaster Managers & Citizens</div>
+    <div>
+        <span class="badge-pill">🌾 Agricultural Advisory</span>
+        <span class="badge-pill">⛈️ Live Rain Radar</span>
+        <span class="badge-pill">📍 City & District Forecasts</span>
+        <span class="badge-pill">🔒 Verified API Data</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-# ---- Session state initialisation ----
-# Streamlit reruns the entire script on every user interaction.
-# st.session_state persists data between those reruns (like a memory).
-
+# Session state initialisation
 if "messages" not in st.session_state:
-    # messages = list of {"role": "user"/"assistant", "content": str}
-    # This is what we display in the chat bubbles.
     st.session_state.messages = []
 
 if "history" not in st.session_state:
-    # history = list of dicts in the exact format the LLM API expects.
-    # For Anthropic, content can be a list of blocks (not just a string).
-    # This is kept separate from `messages` so we can display cleanly.
     st.session_state.history = []
 
-# ---- Check for API key ----
+# Check API key
 chat_fn, provider_name = get_chat_function()
 
 if not chat_fn:
-    # Show a friendly error — don't crash
     st.error(
         "⚠️ **No valid API key found.** "
-        "Open your `.env` file and paste your Anthropic or OpenAI API key. "
-        "Then restart the app with `streamlit run app.py`."
+        "Open your `.env` file and paste your Groq, Anthropic, or OpenAI API key."
     )
-    st.stop()  # Stop rendering — don't show the chat input
+    st.stop()
 
-# ---- Render existing chat history ----
-# Every time the page reruns, we re-draw all previous messages from session_state.
+# Render existing chat history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"], avatar="🧑" if msg["role"] == "user" else "🌤️"):
         st.markdown(msg["content"])
 
-# ---- Handle example question button clicks ----
-# If a sidebar button was clicked, inject it as the user's next input.
+# Handle example question clicks
 prompt_from_button = st.session_state.pop("example_clicked", None)
 
-# ---- Chat input box ----
-# st.chat_input() sits fixed at the bottom of the page.
-# It returns the user's text when they press Enter, otherwise None.
-user_input = st.chat_input("Ask me about the weather anywhere... 🌍") or prompt_from_button
+# Chat input box
+user_input = st.chat_input("Ask about weather, rain forecasts, or farming advice... 🌍") or prompt_from_button
 
 if user_input:
-    # 1️⃣ Show the user's message in a chat bubble immediately
+    # 1. User bubble
     with st.chat_message("user", avatar="🧑"):
         st.markdown(user_input)
 
-    # 2️⃣ Save user message to display history
     st.session_state.messages.append({"role": "user", "content": user_input})
-
-    # 3️⃣ Add to LLM conversation history (used in API call)
     st.session_state.history.append({"role": "user", "content": user_input})
 
-    # 4️⃣ Call the LLM with a loading spinner
+    # 2. Assistant response
     with st.chat_message("assistant", avatar="🌤️"):
-        # The spinner shows while we wait for API responses
-        with st.spinner("Thinking..."):
-
-            # status_text holds a small st.empty() widget that we update
-            # during the tool call to show progress steps to the user
+        with st.spinner("Analyzing query & fetching live meteorological data..."):
             status_placeholder = st.empty()
 
             def update_status(msg: str):
-                """Called from inside the LLM function to update the spinner label."""
                 status_placeholder.markdown(
-                    f"<div style='color:rgba(255,255,255,0.5); font-size:0.85rem;'>{msg}</div>",
+                    f"<div style='color:#74ebd5; font-size:0.85rem; padding:4px 0;'>{msg}</div>",
                     unsafe_allow_html=True
                 )
 
             try:
-                # ▶ This is the core pipeline call — same logic as CLI version
                 response_text = chat_fn(
                     st.session_state.history,
                     status_callback=update_status
                 )
             except Exception as e:
                 error_msg = str(e)
-                # Friendly error messages based on error type
                 if "credit balance" in error_msg.lower() or "balance" in error_msg.lower():
                     response_text = (
-                        "💳 **Credit balance too low.** Your Anthropic account has 0 credits. "
-                        "Please go to [console.anthropic.com/settings/plans](https://console.anthropic.com/settings/plans) to add credits, "
-                        "or switch to an OpenAI key in your `.env` file."
+                        "💳 **Credit balance too low.** Your API account has 0 credits. "
+                        "Please check your API dashboard or switch provider keys in `.env`."
                     )
                 elif "401" in error_msg or "auth" in error_msg.lower() or "invalid" in error_msg.lower():
                     response_text = (
-                        "❌ **Authentication failed.** Your API key appears to be invalid or expired. "
-                        "Please update it in your `.env` file and restart the app."
+                        "❌ **Authentication failed.** API key invalid or expired. "
+                        "Please check your `.env` file."
                     )
                 elif "429" in error_msg or "rate" in error_msg.lower():
-                    response_text = (
-                        "⏳ **Rate limit reached.** Please wait a moment and try again."
-                    )
-                elif "connection" in error_msg.lower() or "network" in error_msg.lower():
-                    response_text = (
-                        "📡 **Network error.** Please check your internet connection and try again."
-                    )
+                    response_text = "⏳ **Rate limit reached.** Please wait a moment and try again."
                 else:
-                    response_text = (
-                        f"⚠️ **Something went wrong:** {error_msg}\n\n"
-                        "Please try again. If the problem continues, restart the app."
-                    )
+                    response_text = f"⚠️ **Notice:** {error_msg}\n\nPlease try asking again."
 
-            # Clear the status message once done
             status_placeholder.empty()
 
-        # 5️⃣ Display the assistant's response
         st.markdown(response_text)
 
-    # 6️⃣ Save assistant response to display history
     st.session_state.messages.append({"role": "assistant", "content": response_text})
 
-    # Note: st.session_state.history was already updated inside chat_fn
-    # (both the user message AND the assistant response are appended there)
-
-# ---- Empty state message (shown when no messages yet) ----
+# Hero Welcome Dashboard (when chat is empty)
 if not st.session_state.messages:
-    st.markdown("""
-    <div style='text-align:center; padding: 3rem 1rem; color:rgba(255,255,255,0.3);'>
-        <div style='font-size: 4rem;'>🌤️</div>
-        <div style='font-size: 1.1rem; margin-top: 1rem;'>
-            Ask me anything about the weather!
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown("""
+        <div class="hero-card">
+            <div class="hero-icon">🌾</div>
+            <div class="hero-title">Farmer Advisory</div>
+            <div class="hero-desc">Crop sowing, irrigation, and harvest rain warnings tailored for district farmers</div>
         </div>
-        <div style='font-size: 0.85rem; margin-top: 0.5rem;'>
-            Try: "Will it rain in Vizianagaram tomorrow?"
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("""
+        <div class="hero-card">
+            <div class="hero-icon">🌧️</div>
+            <div class="hero-title">Live 3-Day Forecast</div>
+            <div class="hero-desc">Accurate rain chances, highs/lows, and wind speeds fetched live from Open-Meteo</div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown("""
+        <div class="hero-card">
+            <div class="hero-icon">🔒</div>
+            <div class="hero-title">Zero Hallucinations</div>
+            <div class="hero-desc">Strict tool-calling architecture guarantees the AI never invents weather figures</div>
+        </div>
+        """, unsafe_allow_html=True)
+
