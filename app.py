@@ -514,6 +514,40 @@ st.set_page_config(
 
 
 # ============================================================================
+# VOICE TTS ASSISTANT HELPER (gTTS)
+# ============================================================================
+
+def generate_voice_audio(text_summary: str, lang_code: str = 'en') -> bytes:
+    """Generates audio MP3 bytes from text using gTTS for accessibility."""
+    try:
+        from gtts import gTTS
+        import io
+
+        # Clean markdown formatting tags for natural speech
+        clean_text = text_summary.replace("**", "").replace("*", "").replace("`", "").replace("#", "").replace(">", "")
+        if len(clean_text) > 350:
+            clean_text = clean_text[:350] + "..."
+        
+        tts = gTTS(text=clean_text, lang=lang_code)
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        fp.seek(0)
+        return fp.read()
+    except Exception:
+        return None
+
+
+# Language Code Mapping
+LANG_MAP = {
+    "English": ("en", "Please respond in clear English."),
+    "Hindi (हिंदी)": ("hi", "Please translate and respond in clear Hindi (हिंदी)."),
+    "Telugu (తెలుగు)": ("te", "Please translate and respond in clear Telugu (తెలుగు)."),
+    "Tamil (தமிழ்)": ("ta", "Please translate and respond in clear Tamil (தமிழ்)."),
+    "Bengali (বাংলা)": ("bn", "Please translate and respond in clear Bengali (বাংলা)."),
+}
+
+
+# ============================================================================
 # CUSTOM CSS — World-Class SIH 2026 Glassmorphic Interface
 # ============================================================================
 
@@ -552,7 +586,7 @@ html, body, [class*="css"] {
 
 .brand-title {
     font-family: 'Outfit', sans-serif;
-    font-size: 2.4rem !important;
+    font-size: 2.5rem !important;
     font-weight: 800 !important;
     background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #00c6ff 100%);
     -webkit-background-clip: text;
@@ -583,6 +617,22 @@ html, body, [class*="css"] {
     color: #74ebd5;
     margin-right: 6px;
     margin-top: 8px;
+}
+
+/* Emergency Alert Banner */
+.alert-card {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    animation: pulseAlert 2s infinite;
+}
+
+@keyframes pulseAlert {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); }
+    70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 /* Chat Message Bubbles */
@@ -738,7 +788,7 @@ with st.sidebar:
             🌤️ WeatherGPT
         </div>
         <div style='font-size: 0.8rem; color: rgba(255,255,255,0.5);'>
-            SIH 2026 Problem Submission
+            Smart India Hackathon (SIH 2026)
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -757,25 +807,28 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Interactive Quick Prompts by Category
-    st.markdown("<div style='font-size:0.85rem; font-weight:700; color:rgba(255,255,255,0.9); margin-bottom:8px;'>🌾 Farmer & Agriculture</div>", unsafe_allow_html=True)
-    agri_prompts = [
-        "Should I sow paddy this week in Vizianagaram?",
-        "Is there rain risk for harvesting in Guntur?",
-    ]
-    for q in agri_prompts:
-        if st.button(q, key=f"ex_{q[:15]}"):
-            st.session_state.example_clicked = q
+    # Multilingual Language Selector
+    selected_lang = st.selectbox(
+        "🌐 Voice & Language Output",
+        options=list(LANG_MAP.keys()),
+        index=0
+    )
+    lang_code, lang_inst = LANG_MAP[selected_lang]
 
-    st.markdown("<div style='font-size:0.85rem; font-weight:700; color:rgba(255,255,255,0.9); margin-top:12px; margin-bottom:8px;'>🌧️ General & Travel</div>", unsafe_allow_html=True)
-    travel_prompts = [
-        "Will it rain in Chennai tomorrow?",
-        "What's the weather in Mumbai right now?",
-        "What's the 3-day forecast for New Delhi?",
-    ]
-    for q in travel_prompts:
-        if st.button(q, key=f"ex_{q[:15]}"):
-            st.session_state.example_clicked = q
+    # Voice TTS Toggle
+    enable_voice = st.toggle("🔊 Enable Audio Speech Assistant", value=True)
+
+    st.markdown("---")
+
+    # Disaster Alert Scenario Trigger (SIH Judging Feature)
+    with st.expander("🚨 Emergency Alert Simulator (SIH Demo)"):
+        st.markdown("<div style='font-size:0.8rem; color:rgba(255,255,255,0.7); margin-bottom:8px;'>Demonstrates automated NDMA/IMD disaster alert dissemination:</div>", unsafe_allow_html=True)
+        if st.button("⚡ Trigger Cyclone Alert Scenario"):
+            st.session_state.active_alert = "CYCLONE"
+        if st.button("⚡ Trigger Heatwave Alert Scenario"):
+            st.session_state.active_alert = "HEATWAVE"
+        if st.button("❌ Clear Active Alert"):
+            st.session_state.active_alert = None
 
     st.markdown("---")
 
@@ -808,11 +861,32 @@ st.markdown("""
     <div>
         <span class="badge-pill">🌾 Agricultural Advisory</span>
         <span class="badge-pill">⛈️ Live Rain Radar</span>
-        <span class="badge-pill">📍 City & District Forecasts</span>
+        <span class="badge-pill">🔊 Multilingual Voice Assistant</span>
         <span class="badge-pill">🔒 Verified API Data</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# Render Simulated Emergency Alert (if active)
+if st.session_state.get("active_alert") == "CYCLONE":
+    st.markdown("""
+    <div class="alert-card">
+        <div style="color: #ef4444; font-weight: 800; font-size: 1.1rem;">🚨 IMD SEVERE CYCLONE WARNING: COASTAL ANDHRA PRADESH & TAMIL NADU</div>
+        <div style="color: rgba(255,255,255,0.85); font-size: 0.9rem; margin-top: 6px;">
+            Sustained wind speeds of 85-95 km/h expected. Heavy to extremely heavy rainfall forecast across Coastal districts. Farmers advised to delay harvesting & secure stored grains immediately.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+elif st.session_state.get("active_alert") == "HEATWAVE":
+    st.markdown("""
+    <div class="alert-card" style="background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.4);">
+        <div style="color: #f59e0b; font-weight: 800; font-size: 1.1rem;">⚠️ IMD SEVERE HEATWAVE RED ALERT: TELANGANA & RAYALASEEMA</div>
+        <div style="color: rgba(255,255,255,0.85); font-size: 0.9rem; margin-top: 6px;">
+            Maximum temperatures expected to cross 44°C. Avoid outdoor farm activities between 11:00 AM and 3:30 PM. Ensure frequent crop irrigation.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Session state initialisation
 if "messages" not in st.session_state:
@@ -835,20 +909,36 @@ if not chat_fn:
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"], avatar="🧑" if msg["role"] == "user" else "🌤️"):
         st.markdown(msg["content"])
+        if msg["role"] == "assistant" and msg.get("audio_bytes"):
+            st.audio(msg["audio_bytes"], format="audio/mp3")
 
-# Handle example question clicks
+# Handle example question clicks or quick city clicks
 prompt_from_button = st.session_state.pop("example_clicked", None)
+
+# Quick City Shortcuts Bar
+st.markdown("<div style='font-size:0.85rem; font-weight:700; color:rgba(255,255,255,0.8); margin-bottom:6px;'>📍 Quick City Weather Search:</div>", unsafe_allow_html=True)
+city_cols = st.columns(7)
+quick_cities = ["Vizianagaram", "Visakhapatnam", "Guntur", "Chennai", "Hyderabad", "Delhi", "Mumbai"]
+for idx, city in enumerate(quick_cities):
+    with city_cols[idx]:
+        if st.button(f"📍 {city}", key=f"quick_{city}"):
+            prompt_from_button = f"What is the weather in {city} right now and 3-day forecast?"
 
 # Chat input box
 user_input = st.chat_input("Ask about weather, rain forecasts, or farming advice... 🌍") or prompt_from_button
 
 if user_input:
+    # Append language instructions if non-English
+    llm_query = user_input
+    if selected_lang != "English":
+        llm_query = f"{user_input}\n\n[Instruction: {lang_inst}]"
+
     # 1. User bubble
     with st.chat_message("user", avatar="🧑"):
         st.markdown(user_input)
 
     st.session_state.messages.append({"role": "user", "content": user_input})
-    st.session_state.history.append({"role": "user", "content": user_input})
+    st.session_state.history.append({"role": "user", "content": llm_query})
 
     # 2. Assistant response
     with st.chat_message("assistant", avatar="🌤️"):
@@ -887,11 +977,72 @@ if user_input:
 
         st.markdown(response_text)
 
-    st.session_state.messages.append({"role": "assistant", "content": response_text})
+        # Generate Audio Voice TTS if enabled
+        audio_data = None
+        if enable_voice:
+            with st.spinner("🔊 Generating voice audio advisory..."):
+                audio_data = generate_voice_audio(response_text, lang_code=lang_code)
+                if audio_data:
+                    st.audio(audio_data, format="audio/mp3")
 
-# Hero Welcome Dashboard (when chat is empty)
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": response_text,
+        "audio_bytes": audio_data
+    })
+
+# Domain Persona Tabs / Interactive Welcome Screen (when chat is empty)
 if not st.session_state.messages:
-    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "🌾 Farmer Advisory",
+        "🌧️ Rain & Forecast",
+        "🚨 Disaster Radar",
+        "✈️ Aviation & Marine"
+    ])
+
+    with tab1:
+        st.markdown("### 🌾 Crop Weather & Harvesting Guidance")
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("🌾 Should I sow paddy this week in Vizianagaram?"):
+                st.session_state.example_clicked = "Should I sow paddy this week in Vizianagaram?"
+        with c2:
+            if st.button("🌾 Is there rain risk for cotton harvesting in Guntur?"):
+                st.session_state.example_clicked = "Is there rain risk for cotton harvesting in Guntur?"
+
+    with tab2:
+        st.markdown("### 🌧️ Real-Time Rain & Temperature Radar")
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("🌧️ Will it rain in Chennai tomorrow?"):
+                st.session_state.example_clicked = "Will it rain in Chennai tomorrow?"
+        with c2:
+            if st.button("🌡️ What is the 3-day forecast for New Delhi?"):
+                st.session_state.example_clicked = "What is the 3-day forecast for New Delhi?"
+
+    with tab3:
+        st.markdown("### 🚨 Disaster Alert & Extreme Weather Briefing")
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("⚡ Check cyclone & storm warnings for Visakhapatnam"):
+                st.session_state.example_clicked = "Check cyclone & storm warnings for Visakhapatnam"
+        with c2:
+            if st.button("🔥 Heatwave advisory for Rayalaseema districts"):
+                st.session_state.example_clicked = "Heatwave advisory for Rayalaseema districts"
+
+    with tab4:
+        st.markdown("### ✈️ Aviation, Marine & Coastal Advisory")
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("🌊 Coastal wind speed & wave state in Machilipatnam"):
+                st.session_state.example_clicked = "Coastal wind speed & wave state in Machilipatnam"
+        with c2:
+            if st.button("✈️ Visibility & storm conditions for Hyderabad airport"):
+                st.session_state.example_clicked = "Visibility & storm conditions for Hyderabad airport"
+
+    st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -906,9 +1057,9 @@ if not st.session_state.messages:
     with col2:
         st.markdown("""
         <div class="hero-card">
-            <div class="hero-icon">🌧️</div>
-            <div class="hero-title">Live 3-Day Forecast</div>
-            <div class="hero-desc">Accurate rain chances, highs/lows, and wind speeds fetched live from Open-Meteo</div>
+            <div class="hero-icon">🔊</div>
+            <div class="hero-title">Multilingual Audio</div>
+            <div class="hero-desc">Spoken audio advisories in English, Hindi, Telugu, Tamil, and Bengali</div>
         </div>
         """, unsafe_allow_html=True)
 
