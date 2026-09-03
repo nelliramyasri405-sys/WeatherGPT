@@ -817,61 +817,173 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
     if (window.cursorInitialized) return;
     window.cursorInitialized = true;
 
-    // Create glowing dot follower
-    const dot = document.createElement('div');
-    dot.id = 'glow-cursor-dot';
-    dot.style.cssText = `
+    // 1. Precise Center Core Dot
+    const core = document.createElement('div');
+    core.id = 'glow-cursor-core';
+    core.style.cssText = `
         position: fixed;
-        width: 14px;
-        height: 14px;
-        background: radial-gradient(circle, #00f2fe 0%, #74ebd5 70%, transparent 100%);
+        width: 8px;
+        height: 8px;
+        background: #00f2fe;
         border-radius: 50%;
         pointer-events: none;
         z-index: 999999;
         transform: translate(-50%, -50%);
-        transition: transform 0.08s ease-out;
-        box-shadow: 0 0 15px #00f2fe, 0 0 30px #00f2fe;
+        box-shadow: 0 0 10px #00f2fe, 0 0 20px #00f2fe;
+        transition: transform 0.05s linear;
     `;
-    document.body.appendChild(dot);
+
+    // 2. Fluid Trailing Aura Ring
+    const ring = document.createElement('div');
+    ring.id = 'glow-cursor-ring';
+    ring.style.cssText = `
+        position: fixed;
+        width: 34px;
+        height: 34px;
+        border: 2px solid rgba(0, 242, 254, 0.6);
+        background: radial-gradient(circle, rgba(0, 242, 254, 0.08) 0%, rgba(168, 85, 247, 0.05) 70%, transparent 100%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 999998;
+        transform: translate(-50%, -50%) scale(1);
+        transition: width 0.25s ease-out, height 0.25s ease-out, border-color 0.25s ease-out, background 0.25s ease-out, transform 0.15s ease-out;
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.3), inset 0 0 10px rgba(0, 242, 254, 0.2);
+    `;
+
+    document.body.appendChild(core);
+    document.body.appendChild(ring);
 
     let mouseX = -100, mouseY = -100;
+    let ringX = -100, ringY = -100;
 
     window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
-        dot.style.left = mouseX + 'px';
-        dot.style.top = mouseY + 'px';
+        core.style.left = mouseX + 'px';
+        core.style.top = mouseY + 'px';
     });
 
-    // Touchscreen Ripple Effect
+    // Smooth Lerp Physics Loop for Trailing Ring
+    function animateRing() {
+        ringX += (mouseX - ringX) * 0.22;
+        ringY += (mouseY - ringY) * 0.22;
+        ring.style.left = ringX + 'px';
+        ring.style.top = ringY + 'px';
+        requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // Hover Magnet & Expansion for Interactive Elements
+    document.addEventListener('mouseover', (e) => {
+        if (e.target.closest('button, [role="button"], a, input, textarea, select, .badge-pill, [data-testid="stRadio"] label')) {
+            ring.style.width = '52px';
+            ring.style.height = '52px';
+            ring.style.borderColor = '#74ebd5';
+            ring.style.background = 'radial-gradient(circle, rgba(116, 235, 213, 0.25) 0%, rgba(0, 242, 254, 0.15) 70%, transparent 100%)';
+            ring.style.boxShadow = '0 0 25px rgba(0, 242, 254, 0.6), inset 0 0 15px rgba(116, 235, 213, 0.4)';
+            core.style.transform = 'translate(-50%, -50%) scale(1.6)';
+        }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        if (e.target.closest('button, [role="button"], a, input, textarea, select, .badge-pill, [data-testid="stRadio"] label')) {
+            ring.style.width = '34px';
+            ring.style.height = '34px';
+            ring.style.borderColor = 'rgba(0, 242, 254, 0.6)';
+            ring.style.background = 'radial-gradient(circle, rgba(0, 242, 254, 0.08) 0%, rgba(168, 85, 247, 0.05) 70%, transparent 100%)';
+            ring.style.boxShadow = '0 0 15px rgba(0, 242, 254, 0.3), inset 0 0 10px rgba(0, 242, 254, 0.2)';
+            core.style.transform = 'translate(-50%, -50%) scale(1)';
+        }
+    });
+
+    // Click Shockwave Burst
+    window.addEventListener('click', (e) => {
+        const burst = document.createElement('div');
+        burst.style.cssText = `
+            position: fixed;
+            left: ${e.clientX}px;
+            top: ${e.clientY}px;
+            width: 10px;
+            height: 10px;
+            border: 2px solid #00f2fe;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999997;
+            transform: translate(-50%, -50%) scale(1);
+            animation: shockwaveExpand 0.45s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            box-shadow: 0 0 20px #00f2fe, inset 0 0 10px #74ebd5;
+        `;
+        document.body.appendChild(burst);
+        setTimeout(() => burst.remove(), 450);
+    });
+
+    // Advanced Touchscreen Weather Identifier
     window.addEventListener('touchstart', (e) => {
         if (e.touches.length > 0) {
-            const touch = e.touches[0];
-            const ripple = document.createElement('div');
-            ripple.style.cssText = `
-                position: fixed;
-                left: ${touch.clientX}px;
-                top: ${touch.clientY}px;
-                width: 12px;
-                height: 12px;
-                border: 2px solid #00f2fe;
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 999999;
-                transform: translate(-50%, -50%) scale(1);
-                animation: touchRipple 0.5s ease-out forwards;
-                box-shadow: 0 0 12px #00f2fe;
-            `;
-            document.body.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 500);
+            for (let i = 0; i < e.touches.length; i++) {
+                const touch = e.touches[i];
+                
+                // Outer expanding aura
+                const touchOrb = document.createElement('div');
+                touchOrb.style.cssText = `
+                    position: fixed;
+                    left: ${touch.clientX}px;
+                    top: ${touch.clientY}px;
+                    width: 24px;
+                    height: 24px;
+                    border: 2px dashed #00f2fe;
+                    background: radial-gradient(circle, rgba(0, 242, 254, 0.4) 0%, rgba(168, 85, 247, 0.2) 60%, transparent 100%);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 999999;
+                    transform: translate(-50%, -50%) scale(0.5);
+                    animation: touchWeatherAura 0.65s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+                    box-shadow: 0 0 25px #00f2fe, 0 0 45px rgba(168, 85, 247, 0.5);
+                `;
+
+                // Core pulsing touch dot
+                const touchDot = document.createElement('div');
+                touchDot.style.cssText = `
+                    position: fixed;
+                    left: ${touch.clientX}px;
+                    top: ${touch.clientY}px;
+                    width: 14px;
+                    height: 14px;
+                    background: #ffffff;
+                    border: 2px solid #00f2fe;
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 999999;
+                    transform: translate(-50%, -50%);
+                    animation: touchDotPulse 0.45s ease-out forwards;
+                    box-shadow: 0 0 15px #00f2fe;
+                `;
+
+                document.body.appendChild(touchOrb);
+                document.body.appendChild(touchDot);
+
+                setTimeout(() => {
+                    touchOrb.remove();
+                    touchDot.remove();
+                }, 650);
+            }
         }
     });
 
     const style = document.createElement('style');
     style.innerHTML = `
-        @keyframes touchRipple {
+        @keyframes shockwaveExpand {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; border-width: 3px; }
+            100% { transform: translate(-50%, -50%) scale(5.5); opacity: 0; border-width: 1px; }
+        }
+        @keyframes touchWeatherAura {
+            0% { transform: translate(-50%, -50%) scale(0.5) rotate(0deg); opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(4.2) rotate(180deg); opacity: 0; }
+        }
+        @keyframes touchDotPulse {
             0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
         }
     `;
     document.head.appendChild(style);
