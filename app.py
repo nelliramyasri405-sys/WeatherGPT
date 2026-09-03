@@ -35,12 +35,30 @@ import requests
 import streamlit as st
 from dotenv import load_dotenv
 
-# Load API keys from .env file (override=True ensures .env wins over stale
-# terminal environment variables)
+# Load API keys — supports both local (.env file) AND Streamlit Cloud (st.secrets)
+# Locally:  Keys come from .env file via python-dotenv
+# On Cloud: Keys come from Streamlit's "Secrets" settings (set in dashboard)
 load_dotenv(override=True)
 
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
-OPENAI_API_KEY    = os.environ.get("OPENAI_API_KEY")
+def get_api_key(key_name: str) -> str:
+    """
+    Gets an API key, checking multiple sources in priority order:
+    1. Streamlit secrets (for Streamlit Cloud deployment)
+    2. Environment variables / .env file (for local development)
+    """
+    # Try Streamlit secrets first (used on Streamlit Community Cloud)
+    try:
+        value = st.secrets.get(key_name, None)
+        if value:
+            return value
+    except Exception:
+        pass  # st.secrets not available or not configured
+
+    # Fall back to environment variable / .env file
+    return os.environ.get(key_name, "")
+
+ANTHROPIC_API_KEY = get_api_key("ANTHROPIC_API_KEY")
+OPENAI_API_KEY    = get_api_key("OPENAI_API_KEY")
 
 
 # ============================================================================
