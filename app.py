@@ -540,8 +540,8 @@ def generate_voice_audio(text_summary: str, lang_code: str = 'en') -> bytes:
 # Language Code Mapping & System Instructions
 LANG_MAP = {
     "English": ("en", "Please respond in clear English.", "Ask about weather, rain forecasts, or farming advice... 🌍"),
-    "Telugu (తెలుగు)": ("te", "CRITICAL INSTRUCTION: Respond entirely in clear Telugu script (తెలుగు భాషలో సమాధానం ఇవ్వండి). All weather numbers must come strictly from the Open-Meteo tool result.", "వాతావరణం, వర్షపాతం లేదా వ్యవసాయ సలహాల గురించి అడగండి... 🌍"),
-    "Hindi (हिंदी)": ("hi", "CRITICAL INSTRUCTION: Respond entirely in clear Hindi script (हिंदी भाषा में उत्तर दें). All weather numbers must come strictly from the Open-Meteo tool result.", "मौसम, बारिश के पूर्वानुमान या कृषि सलाह के बारे में पूछें... 🌍"),
+    "Telugu (తెలుగు)": ("te", "CRITICAL INSTRUCTION: You MUST use the get_weather tool to fetch data using English city names. However, your final conversational response to the user MUST be entirely in clear Telugu script (తెలుగు భాషలో సమాధానం ఇవ్వండి).", "వాతావరణం, వర్షపాతం లేదా వ్యవసాయ సలహాల గురించి అడగండి... 🌍"),
+    "Hindi (हिंदी)": ("hi", "CRITICAL INSTRUCTION: You MUST use the get_weather tool to fetch data using English city names. However, your final conversational response to the user MUST be entirely in clear Hindi script (हिंदी भाषा में उत्तर दें).", "मौसम, बारिश के पूर्वानुमान या कृषि सलाह के बारे में पूछें... 🌍"),
 }
 
 # Session State Language Initialization
@@ -574,10 +574,18 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='%2300f2fe' stroke='%2374ebd5' stroke-width='1.5'%3E%3Ccircle cx='12' cy='12' r='8' fill-opacity='0.3'/%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), pointer !important;
 }
 
-/* App Background: Rich Mesh Gradient */
+/* App Background: Animated Rich Mesh Gradient */
 .stApp {
-    background: radial-gradient(circle at 15% 15%, #1a103c 0%, #0d0b1e 50%, #05040a 100%);
+    background: linear-gradient(-45deg, #05040a, #0d0b1e, #1a103c, #0a1128);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
     min-height: 100vh;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* Header Container */
