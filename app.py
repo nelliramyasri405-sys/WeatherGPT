@@ -31,9 +31,17 @@ Author: WeatherGPT Team (SIH 2026)
 
 import os
 import json
+import base64
 import requests
 import streamlit as st
 from dotenv import load_dotenv
+
+def get_base64_encoded_image(image_path: str) -> str:
+    """Helper function to load a local image file and encode it as a base64 string for CSS/HTML."""
+    if os.path.exists(image_path):
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode("utf-8")
+    return ""
 
 # Load API keys — supports both local (.env file) AND Streamlit Cloud (st.secrets)
 # Locally:  Keys come from .env file via python-dotenv
@@ -557,32 +565,40 @@ lang_code, lang_inst, placeholder_txt = LANG_MAP[st.session_state.selected_langu
 # CUSTOM CSS — World-Class SIH 2026 Glassmorphic Interface
 # ============================================================================
 
-st.markdown("""
+# Load weather background image
+bg_b64 = get_base64_encoded_image(os.path.join(os.path.dirname(__file__), "assets", "weather_bg.jpg"))
+farmer_b64 = get_base64_encoded_image(os.path.join(os.path.dirname(__file__), "assets", "farmer_advisory.jpg"))
+disaster_b64 = get_base64_encoded_image(os.path.join(os.path.dirname(__file__), "assets", "disaster_radar.jpg"))
+
+if bg_b64:
+    bg_style = f"background: linear-gradient(135deg, rgba(5, 4, 15, 0.78), rgba(13, 11, 30, 0.82)), url('data:image/jpeg;base64,{bg_b64}') no-repeat center center fixed !important; background-size: cover !important;"
+else:
+    bg_style = "background: linear-gradient(-45deg, #05040a, #0d0b1e, #1a103c, #0a1128); background-size: 400% 400%; animation: gradientBG 15s ease infinite;"
+
+st.markdown(f"""
 <style>
 /* Import Google Fonts: Outfit for Titles, Inter for Body, Noto Sans Telugu & Devanagari for Multilingual Support */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 
 /* Global Font Base */
-html, body, [class*="css"], [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] span, [data-testid="stMarkdownContainer"] div {
+html, body, [class*="css"], [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] span, [data-testid="stMarkdownContainer"] div {{
     font-family: 'Inter', 'Noto Sans Telugu', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-}
+}}
 
 /* Custom Pointer Cursors */
-html, body, button, input, select, textarea, [role="button"], a {
+html, body, button, input, select, textarea, [role="button"], a {{
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300f2fe' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important;
-}
+}}
 
-button:hover, [role="button"]:hover, a:hover, select:hover {
+button:hover, [role="button"]:hover, a:hover, select:hover {{
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='%2300f2fe' stroke='%2374ebd5' stroke-width='1.5'%3E%3Ccircle cx='12' cy='12' r='8' fill-opacity='0.3'/%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), pointer !important;
-}
+}}
 
-/* App Background: Animated Rich Mesh Gradient */
-.stApp {
-    background: linear-gradient(-45deg, #05040a, #0d0b1e, #1a103c, #0a1128);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+/* App Background: Weather Sky Atmospheric Image + Gradient */
+.stApp {{
+    {bg_style}
     min-height: 100vh;
-}
+}}
 
 @keyframes gradientBG {
     0% { background-position: 0% 50%; }
@@ -1124,6 +1140,8 @@ if not st.session_state.messages:
     ])
 
     with tab1:
+        if os.path.exists("assets/farmer_advisory.jpg"):
+            st.image("assets/farmer_advisory.jpg", caption="🌾 Monsoon Agriculture & Paddy Crop Intelligence", use_container_width=True)
         st.markdown("### 🌾 Crop Weather & Harvesting Guidance")
         c1, c2 = st.columns(2)
         with c1:
@@ -1148,6 +1166,8 @@ if not st.session_state.messages:
                 st.rerun()
 
     with tab3:
+        if os.path.exists("assets/disaster_radar.jpg"):
+            st.image("assets/disaster_radar.jpg", caption="🚨 Severe Meteorological Radar & Storm Tracking", use_container_width=True)
         st.markdown("### 🚨 Disaster Alert & Extreme Weather Briefing")
         c1, c2 = st.columns(2)
         with c1:
