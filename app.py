@@ -822,14 +822,15 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
     core.id = 'glow-cursor-core';
     core.style.cssText = `
         position: fixed;
-        width: 8px;
-        height: 8px;
-        background: #00f2fe;
+        width: 10px;
+        height: 10px;
+        background: radial-gradient(circle, #ffffff 0%, #00f2fe 70%, #74ebd5 100%);
+        border: 2px solid #ffffff;
         border-radius: 50%;
         pointer-events: none;
         z-index: 999999;
         transform: translate(-50%, -50%);
-        box-shadow: 0 0 10px #00f2fe, 0 0 20px #00f2fe;
+        box-shadow: 0 0 12px #00f2fe, 0 0 24px #00f2fe;
         transition: transform 0.05s linear;
     `;
 
@@ -838,16 +839,17 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
     ring.id = 'glow-cursor-ring';
     ring.style.cssText = `
         position: fixed;
-        width: 34px;
-        height: 34px;
-        border: 2px solid rgba(0, 242, 254, 0.6);
-        background: radial-gradient(circle, rgba(0, 242, 254, 0.08) 0%, rgba(168, 85, 247, 0.05) 70%, transparent 100%);
+        width: 36px;
+        height: 36px;
+        border: 2px dashed #00f2fe;
+        background: radial-gradient(circle, rgba(0, 242, 254, 0.12) 0%, rgba(168, 85, 247, 0.08) 70%, transparent 100%);
         border-radius: 50%;
         pointer-events: none;
         z-index: 999998;
         transform: translate(-50%, -50%) scale(1);
         transition: width 0.25s ease-out, height 0.25s ease-out, border-color 0.25s ease-out, background 0.25s ease-out, transform 0.15s ease-out;
-        box-shadow: 0 0 15px rgba(0, 242, 254, 0.3), inset 0 0 10px rgba(0, 242, 254, 0.2);
+        box-shadow: 0 0 18px rgba(0, 242, 254, 0.4), inset 0 0 12px rgba(0, 242, 254, 0.25);
+        animation: rotateCursorRing 8s linear infinite;
     `;
 
     document.body.appendChild(core);
@@ -855,13 +857,46 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
 
     let mouseX = -100, mouseY = -100;
     let ringX = -100, ringY = -100;
+    let lastParticleTime = 0;
 
     window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
         core.style.left = mouseX + 'px';
         core.style.top = mouseY + 'px';
+
+        // Emit Sparkle Particles on movement (throttled to 40ms)
+        const now = Date.now();
+        if (now - lastParticleTime > 40) {
+            lastParticleTime = now;
+            createParticle(mouseX, mouseY);
+        }
     });
+
+    // Particle Sparkle Comet Trail Generator
+    function createParticle(x, y) {
+        const particle = document.createElement('div');
+        const colors = ['#00f2fe', '#74ebd5', '#ffd700', '#a855f7'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        const size = Math.random() * 6 + 3;
+
+        particle.style.cssText = `
+            position: fixed;
+            left: ${x + (Math.random() * 12 - 6)}px;
+            top: ${y + (Math.random() * 12 - 6)}px;
+            width: ${size}px;
+            height: ${size}px;
+            background: ${randomColor};
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999996;
+            box-shadow: 0 0 8px ${randomColor};
+            transform: scale(1);
+            animation: particleFloat 0.5s ease-out forwards;
+        `;
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 500);
+    }
 
     // Smooth Lerp Physics Loop for Trailing Ring
     function animateRing() {
@@ -873,25 +908,27 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
     }
     animateRing();
 
-    // Hover Magnet & Expansion for Interactive Elements
+    // Hover Magnet & Radar Expansion for Interactive Elements
     document.addEventListener('mouseover', (e) => {
         if (e.target.closest('button, [role="button"], a, input, textarea, select, .badge-pill, [data-testid="stRadio"] label')) {
-            ring.style.width = '52px';
-            ring.style.height = '52px';
+            ring.style.width = '56px';
+            ring.style.height = '56px';
             ring.style.borderColor = '#74ebd5';
-            ring.style.background = 'radial-gradient(circle, rgba(116, 235, 213, 0.25) 0%, rgba(0, 242, 254, 0.15) 70%, transparent 100%)';
-            ring.style.boxShadow = '0 0 25px rgba(0, 242, 254, 0.6), inset 0 0 15px rgba(116, 235, 213, 0.4)';
-            core.style.transform = 'translate(-50%, -50%) scale(1.6)';
+            ring.style.borderStyle = 'solid';
+            ring.style.background = 'radial-gradient(circle, rgba(116, 235, 213, 0.3) 0%, rgba(0, 242, 254, 0.2) 70%, transparent 100%)';
+            ring.style.boxShadow = '0 0 30px rgba(0, 242, 254, 0.7), inset 0 0 20px rgba(116, 235, 213, 0.5)';
+            core.style.transform = 'translate(-50%, -50%) scale(1.7)';
         }
     });
 
     document.addEventListener('mouseout', (e) => {
         if (e.target.closest('button, [role="button"], a, input, textarea, select, .badge-pill, [data-testid="stRadio"] label')) {
-            ring.style.width = '34px';
-            ring.style.height = '34px';
-            ring.style.borderColor = 'rgba(0, 242, 254, 0.6)';
-            ring.style.background = 'radial-gradient(circle, rgba(0, 242, 254, 0.08) 0%, rgba(168, 85, 247, 0.05) 70%, transparent 100%)';
-            ring.style.boxShadow = '0 0 15px rgba(0, 242, 254, 0.3), inset 0 0 10px rgba(0, 242, 254, 0.2)';
+            ring.style.width = '36px';
+            ring.style.height = '36px';
+            ring.style.borderColor = '#00f2fe';
+            ring.style.borderStyle = 'dashed';
+            ring.style.background = 'radial-gradient(circle, rgba(0, 242, 254, 0.12) 0%, rgba(168, 85, 247, 0.08) 70%, transparent 100%)';
+            ring.style.boxShadow = '0 0 18px rgba(0, 242, 254, 0.4), inset 0 0 12px rgba(0, 242, 254, 0.25)';
             core.style.transform = 'translate(-50%, -50%) scale(1)';
         }
     });
@@ -903,15 +940,15 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
             position: fixed;
             left: ${e.clientX}px;
             top: ${e.clientY}px;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border: 2px solid #00f2fe;
             border-radius: 50%;
             pointer-events: none;
             z-index: 999997;
             transform: translate(-50%, -50%) scale(1);
             animation: shockwaveExpand 0.45s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-            box-shadow: 0 0 20px #00f2fe, inset 0 0 10px #74ebd5;
+            box-shadow: 0 0 24px #00f2fe, inset 0 0 12px #74ebd5;
         `;
         document.body.appendChild(burst);
         setTimeout(() => burst.remove(), 450);
@@ -929,16 +966,16 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
                     position: fixed;
                     left: ${touch.clientX}px;
                     top: ${touch.clientY}px;
-                    width: 24px;
-                    height: 24px;
+                    width: 28px;
+                    height: 28px;
                     border: 2px dashed #00f2fe;
-                    background: radial-gradient(circle, rgba(0, 242, 254, 0.4) 0%, rgba(168, 85, 247, 0.2) 60%, transparent 100%);
+                    background: radial-gradient(circle, rgba(0, 242, 254, 0.45) 0%, rgba(168, 85, 247, 0.25) 60%, transparent 100%);
                     border-radius: 50%;
                     pointer-events: none;
                     z-index: 999999;
                     transform: translate(-50%, -50%) scale(0.5);
                     animation: touchWeatherAura 0.65s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
-                    box-shadow: 0 0 25px #00f2fe, 0 0 45px rgba(168, 85, 247, 0.5);
+                    box-shadow: 0 0 30px #00f2fe, 0 0 50px rgba(168, 85, 247, 0.6);
                 `;
 
                 // Core pulsing touch dot
@@ -947,8 +984,8 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
                     position: fixed;
                     left: ${touch.clientX}px;
                     top: ${touch.clientY}px;
-                    width: 14px;
-                    height: 14px;
+                    width: 16px;
+                    height: 16px;
                     background: #ffffff;
                     border: 2px solid #00f2fe;
                     border-radius: 50%;
@@ -956,7 +993,7 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
                     z-index: 999999;
                     transform: translate(-50%, -50%);
                     animation: touchDotPulse 0.45s ease-out forwards;
-                    box-shadow: 0 0 15px #00f2fe;
+                    box-shadow: 0 0 20px #00f2fe;
                 `;
 
                 document.body.appendChild(touchOrb);
@@ -972,18 +1009,26 @@ button:hover, [role="button"]:hover, a:hover, select:hover {
 
     const style = document.createElement('style');
     style.innerHTML = `
+        @keyframes rotateCursorRing {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @keyframes particleFloat {
+            0% { transform: scale(1) translateY(0); opacity: 1; }
+            100% { transform: scale(0.2) translateY(-18px); opacity: 0; }
+        }
         @keyframes shockwaveExpand {
             0% { transform: translate(-50%, -50%) scale(1); opacity: 1; border-width: 3px; }
-            100% { transform: translate(-50%, -50%) scale(5.5); opacity: 0; border-width: 1px; }
+            100% { transform: translate(-50%, -50%) scale(6); opacity: 0; border-width: 1px; }
         }
         @keyframes touchWeatherAura {
             0% { transform: translate(-50%, -50%) scale(0.5) rotate(0deg); opacity: 1; }
-            50% { opacity: 0.8; }
-            100% { transform: translate(-50%, -50%) scale(4.2) rotate(180deg); opacity: 0; }
+            50% { opacity: 0.85; }
+            100% { transform: translate(-50%, -50%) scale(4.5) rotate(180deg); opacity: 0; }
         }
         @keyframes touchDotPulse {
             0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
         }
     `;
     document.head.appendChild(style);
