@@ -919,15 +919,17 @@ with st.sidebar:
     st.markdown("""
     <div class="arch-box">
         <strong style="color:#74ebd5;">🔒 Core Credibility Rule:</strong><br>
-        The LLM <em>never</em> invents forecast numbers. 100% of temperatures, rain, and wind metrics are fetched live from Open-Meteo meteorological APIs.
+        The LLM <em>never</em> invents forecast numbers. 100% of temperatures, rain, and wind metrics are fetched live from <a href="https://open-meteo.com/" target="_blank" style="color:#00f2fe;">Open-Meteo API</a>.
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("---")
     st.markdown("""
-    <div style='font-size:0.72rem; color:rgba(255,255,255,0.35); text-align:center;'>
-        WeatherGPT · Smart India Hackathon 2026<br>
-        Open-Meteo Real-Time Data Pipeline
+    <div style='font-size:0.75rem; color:rgba(255,255,255,0.45); text-align:center;'>
+        <strong>WeatherGPT</strong> · SIH 2026<br>
+        🌐 <a href="https://open-meteo.com/" target="_blank" style="color:#74ebd5;">Open-Meteo Weather API</a><br>
+        ⚡ <a href="https://console.groq.com/" target="_blank" style="color:#74ebd5;">Groq AI Engine</a><br>
+        📂 <a href="https://github.com/nelliramyasri405-sys/WeatherGPT" target="_blank" style="color:#74ebd5;">GitHub Project Repo</a>
     </div>
     """, unsafe_allow_html=True)
 
