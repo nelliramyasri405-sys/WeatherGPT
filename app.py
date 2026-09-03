@@ -537,14 +537,18 @@ def generate_voice_audio(text_summary: str, lang_code: str = 'en') -> bytes:
         return None
 
 
-# Language Code Mapping
+# Language Code Mapping & System Instructions
 LANG_MAP = {
-    "English": ("en", "Please respond in clear English."),
-    "Hindi (हिंदी)": ("hi", "Please translate and respond in clear Hindi (हिंदी)."),
-    "Telugu (తెలుగు)": ("te", "Please translate and respond in clear Telugu (తెలుగు)."),
-    "Tamil (தமிழ்)": ("ta", "Please translate and respond in clear Tamil (தமிழ்)."),
-    "Bengali (বাংলা)": ("bn", "Please translate and respond in clear Bengali (বাংলা)."),
+    "English": ("en", "Please respond in clear English.", "Ask about weather, rain forecasts, or farming advice... 🌍"),
+    "Telugu (తెలుగు)": ("te", "CRITICAL INSTRUCTION: Respond entirely in clear Telugu script (తెలుగు భాషలో సమాధానం ఇవ్వండి). All weather numbers must come strictly from the Open-Meteo tool result.", "వాతావరణం, వర్షపాతం లేదా వ్యవసాయ సలహాల గురించి అడగండి... 🌍"),
+    "Hindi (हिंदी)": ("hi", "CRITICAL INSTRUCTION: Respond entirely in clear Hindi script (हिंदी भाषा में उत्तर दें). All weather numbers must come strictly from the Open-Meteo tool result.", "मौसम, बारिश के पूर्वानुमान या कृषि सलाह के बारे में पूछें... 🌍"),
 }
+
+# Session State Language Initialization
+if "selected_language" not in st.session_state:
+    st.session_state.selected_language = "English"
+
+lang_code, lang_inst, placeholder_txt = LANG_MAP[st.session_state.selected_language]
 
 
 # ============================================================================
@@ -882,13 +886,17 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Multilingual Language Selector
-    selected_lang = st.selectbox(
+    # Multilingual Language Selector synced with Top Bar
+    current_index = list(LANG_MAP.keys()).index(st.session_state.selected_language) if st.session_state.selected_language in LANG_MAP else 0
+    sidebar_lang = st.selectbox(
         "🌐 Voice & Language Output",
         options=list(LANG_MAP.keys()),
-        index=0
+        index=current_index,
+        key="sidebar_lang_select"
     )
-    lang_code, lang_inst = LANG_MAP[selected_lang]
+    if sidebar_lang != st.session_state.selected_language:
+        st.session_state.selected_language = sidebar_lang
+        st.rerun()
 
     # Voice TTS Toggle
     enable_voice = st.toggle("🔊 Enable Audio Speech Assistant", value=True)
@@ -941,6 +949,30 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# Top Bar Language Switcher
+st.markdown("<div style='font-size:0.85rem; font-weight:700; color:rgba(255,255,255,0.9); margin-bottom:8px;'>🌐 Language / భాష / भाषा:</div>", unsafe_allow_html=True)
+lcol1, lcol2, lcol3 = st.columns(3)
+
+with lcol1:
+    btn_style_en = "primary" if st.session_state.selected_language == "English" else "secondary"
+    if st.button("🇬🇧 English", key="top_lang_en"):
+        st.session_state.selected_language = "English"
+        st.rerun()
+
+with lcol2:
+    btn_style_te = "primary" if st.session_state.selected_language == "Telugu (తెలుగు)" else "secondary"
+    if st.button("🇮🇳 Telugu (తెలుగు)", key="top_lang_te"):
+        st.session_state.selected_language = "Telugu (తెలుగు)"
+        st.rerun()
+
+with lcol3:
+    btn_style_hi = "primary" if st.session_state.selected_language == "Hindi (हिंदी)" else "secondary"
+    if st.button("🇮🇳 Hindi (हिंदी)", key="top_lang_hi"):
+        st.session_state.selected_language = "Hindi (हिंदी)"
+        st.rerun()
+
+st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
 # Render Simulated Emergency Alert (if active)
 if st.session_state.get("active_alert") == "CYCLONE":
@@ -1000,13 +1032,13 @@ for idx, city in enumerate(quick_cities):
             st.session_state.example_clicked = f"What is the weather in {city} right now and 3-day forecast?"
             st.rerun()
 
-# Chat input box
-user_input = st.chat_input("Ask about weather, rain forecasts, or farming advice... 🌍") or prompt_from_button
+# Chat input box with dynamic multilingual placeholder
+user_input = st.chat_input(placeholder_txt) or prompt_from_button
 
 if user_input:
     # Append language instructions if non-English
     llm_query = user_input
-    if selected_lang != "English":
+    if st.session_state.selected_language != "English":
         llm_query = f"{user_input}\n\n[Instruction: {lang_inst}]"
 
     # 1. User bubble
