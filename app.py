@@ -922,7 +922,8 @@ quick_cities = ["Vizianagaram", "Visakhapatnam", "Guntur", "Chennai", "Hyderabad
 for idx, city in enumerate(quick_cities):
     with city_cols[idx]:
         if st.button(f"📍 {city}", key=f"quick_{city}"):
-            prompt_from_button = f"What is the weather in {city} right now and 3-day forecast?"
+            st.session_state.example_clicked = f"What is the weather in {city} right now and 3-day forecast?"
+            st.rerun()
 
 # Chat input box
 user_input = st.chat_input("Ask about weather, rain forecasts, or farming advice... 🌍") or prompt_from_button
@@ -1008,9 +1009,11 @@ if not st.session_state.messages:
         with c1:
             if st.button("🌾 Should I sow paddy this week in Vizianagaram?"):
                 st.session_state.example_clicked = "Should I sow paddy this week in Vizianagaram?"
+                st.rerun()
         with c2:
             if st.button("🌾 Is there rain risk for cotton harvesting in Guntur?"):
                 st.session_state.example_clicked = "Is there rain risk for cotton harvesting in Guntur?"
+                st.rerun()
 
     with tab2:
         st.markdown("### 🌧️ Real-Time Rain & Temperature Radar")
@@ -1018,9 +1021,11 @@ if not st.session_state.messages:
         with c1:
             if st.button("🌧️ Will it rain in Chennai tomorrow?"):
                 st.session_state.example_clicked = "Will it rain in Chennai tomorrow?"
+                st.rerun()
         with c2:
             if st.button("🌡️ What is the 3-day forecast for New Delhi?"):
                 st.session_state.example_clicked = "What is the 3-day forecast for New Delhi?"
+                st.rerun()
 
     with tab3:
         st.markdown("### 🚨 Disaster Alert & Extreme Weather Briefing")
@@ -1028,9 +1033,11 @@ if not st.session_state.messages:
         with c1:
             if st.button("⚡ Check cyclone & storm warnings for Visakhapatnam"):
                 st.session_state.example_clicked = "Check cyclone & storm warnings for Visakhapatnam"
+                st.rerun()
         with c2:
             if st.button("🔥 Heatwave advisory for Rayalaseema districts"):
                 st.session_state.example_clicked = "Heatwave advisory for Rayalaseema districts"
+                st.rerun()
 
     with tab4:
         st.markdown("### ✈️ Aviation, Marine & Coastal Advisory")
@@ -1038,37 +1045,27 @@ if not st.session_state.messages:
         with c1:
             if st.button("🌊 Coastal wind speed & wave state in Machilipatnam"):
                 st.session_state.example_clicked = "Coastal wind speed & wave state in Machilipatnam"
+                st.rerun()
         with c2:
             if st.button("✈️ Visibility & storm conditions for Hyderabad airport"):
                 st.session_state.example_clicked = "Visibility & storm conditions for Hyderabad airport"
+                st.rerun()
 
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown("""
-        <div class="hero-card">
-            <div class="hero-icon">🌾</div>
-            <div class="hero-title">Farmer Advisory</div>
-            <div class="hero-desc">Crop sowing, irrigation, and harvest rain warnings tailored for district farmers</div>
-        </div>
-        """, unsafe_allow_html=True)
+        if st.button("🌾\n**Farmer Advisory**\nCrop sowing & harvest advisories", key="hero_farmer"):
+            st.session_state.example_clicked = "Give me a farmer advisory for crop sowing and rain risks in Vizianagaram"
+            st.rerun()
 
     with col2:
-        st.markdown("""
-        <div class="hero-card">
-            <div class="hero-icon">🔊</div>
-            <div class="hero-title">Multilingual Audio</div>
-            <div class="hero-desc">Spoken audio advisories in English, Hindi, Telugu, Tamil, and Bengali</div>
-        </div>
-        """, unsafe_allow_html=True)
+        if st.button("🔊\n**Multilingual Audio**\nSpoken advisories in 5 languages", key="hero_audio"):
+            st.session_state.example_clicked = "What is the 3-day weather forecast for Chennai?"
+            st.rerun()
 
     with col3:
-        st.markdown("""
-        <div class="hero-card">
-            <div class="hero-icon">🔒</div>
-            <div class="hero-title">Zero Hallucinations</div>
-            <div class="hero-desc">Strict tool-calling architecture guarantees the AI never invents weather figures</div>
-        </div>
-        """, unsafe_allow_html=True)
+        if st.button("🔒\n**Zero Hallucinations**\nStrict verified Open-Meteo API data", key="hero_verified"):
+            st.session_state.example_clicked = "Explain current weather in Mumbai with exact API data"
+            st.rerun()
 
