@@ -142,6 +142,7 @@ SYSTEM_PROMPT = """You are WeatherGPT, an intelligent weather assistant designed
 # WEATHER TOOL — Fetches REAL data from Open-Meteo (free, no API key needed)
 # ============================================================================
 
+@st.cache_data(ttl=300, show_spinner=False)
 def get_weather(city_name: str) -> str:
     """
     Fetches real weather data for a city from Open-Meteo.
@@ -517,6 +518,7 @@ st.set_page_config(
 # VOICE TTS ASSISTANT HELPER (gTTS)
 # ============================================================================
 
+@st.cache_data(ttl=600, show_spinner=False)
 def generate_voice_audio(text_summary: str, lang_code: str = 'en') -> bytes:
     """Generates audio MP3 bytes from text using gTTS for accessibility."""
     try:
