@@ -575,30 +575,28 @@ if bg_b64:
 else:
     bg_style = "background: linear-gradient(-45deg, #05040a, #0d0b1e, #1a103c, #0a1128); background-size: 400% 400%; animation: gradientBG 15s ease infinite;"
 
-st.markdown(f"""
+# Inject dynamic weather background image style
+st.markdown(f"<style>.stApp {{ {bg_style} min-height: 100vh; }}</style>", unsafe_allow_html=True)
+
+# Main CSS & JS Block
+st.markdown("""
 <style>
 /* Import Google Fonts: Outfit for Titles, Inter for Body, Noto Sans Telugu & Devanagari for Multilingual Support */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 
 /* Global Font Base */
-html, body, [class*="css"], [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] span, [data-testid="stMarkdownContainer"] div {{
+html, body, [class*="css"], [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] span, [data-testid="stMarkdownContainer"] div {
     font-family: 'Inter', 'Noto Sans Telugu', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-}}
+}
 
 /* Custom Pointer Cursors */
-html, body, button, input, select, textarea, [role="button"], a {{
+html, body, button, input, select, textarea, [role="button"], a {
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300f2fe' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important;
-}}
+}
 
-button:hover, [role="button"]:hover, a:hover, select:hover {{
+button:hover, [role="button"]:hover, a:hover, select:hover {
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='%2300f2fe' stroke='%2374ebd5' stroke-width='1.5'%3E%3Ccircle cx='12' cy='12' r='8' fill-opacity='0.3'/%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), pointer !important;
-}}
-
-/* App Background: Weather Sky Atmospheric Image + Gradient */
-.stApp {{
-    {bg_style}
-    min-height: 100vh;
-}}
+}
 
 @keyframes gradientBG {
     0% { background-position: 0% 50%; }
