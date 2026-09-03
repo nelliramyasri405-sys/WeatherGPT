@@ -320,21 +320,18 @@ def chat_with_anthropic(conversation_history: list, status_callback=None) -> str
     """
     Sends conversation to Anthropic Claude, handles tool calling,
     and returns the final text response.
-
-    status_callback: optional function(str) called to update loading message
     """
     import anthropic
     client   = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     response = client.messages.create(
         model="claude-3-5-sonnet-latest",
-        max_tokens=1024,
+        max_tokens=2048,
         system=SYSTEM_PROMPT,
         tools=ANTHROPIC_TOOLS,
         messages=conversation_history,
     )
 
     if response.stop_reason == "tool_use":
-        # Claude wants to call a weather tool
         conversation_history.append({"role": "assistant", "content": response.content})
 
         tool_results = []
@@ -360,9 +357,8 @@ def chat_with_anthropic(conversation_history: list, status_callback=None) -> str
 
         final = client.messages.create(
             model="claude-3-5-sonnet-latest",
-            max_tokens=1024,
+            max_tokens=2048,
             system=SYSTEM_PROMPT,
-            tools=ANTHROPIC_TOOLS,
             messages=conversation_history,
         )
 
@@ -386,14 +382,14 @@ def chat_with_openai(conversation_history: list, status_callback=None) -> str:
     messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_history
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini", max_tokens=1024, tools=OPENAI_TOOLS, messages=messages
+        model="gpt-4o-mini", max_tokens=2048, tools=OPENAI_TOOLS, messages=messages
     )
     message = response.choices[0].message
 
     if message.tool_calls:
         conversation_history.append({
             "role": "assistant",
-            "content": message.content,
+            "content": message.content or "",
             "tool_calls": [
                 {"id": tc.id, "type": "function",
                  "function": {"name": tc.function.name, "arguments": tc.function.arguments}}
@@ -417,7 +413,7 @@ def chat_with_openai(conversation_history: list, status_callback=None) -> str:
 
         messages  = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_history
         final     = client.chat.completions.create(
-            model="gpt-4o-mini", max_tokens=1024, tools=OPENAI_TOOLS, messages=messages
+            model="gpt-4o-mini", max_tokens=2048, messages=messages
         )
         text = final.choices[0].message.content or ""
         conversation_history.append({"role": "assistant", "content": text})
@@ -436,20 +432,21 @@ def chat_with_groq(conversation_history: list, status_callback=None) -> str:
     Sends conversation to Groq Cloud (High-speed free AI engine), handles tool calling,
     and returns the final text response.
     """
+    import re
     from openai import OpenAI
     key = GROQ_API_KEY or (ANTHROPIC_API_KEY if ANTHROPIC_API_KEY.startswith("gsk_") else "")
     client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
     messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_history
 
     response = client.chat.completions.create(
-        model="qwen/qwen3.6-27b", max_tokens=1024, tools=OPENAI_TOOLS, messages=messages
+        model="qwen/qwen3.6-27b", max_tokens=2048, tools=OPENAI_TOOLS, messages=messages
     )
     message = response.choices[0].message
 
     if message.tool_calls:
         conversation_history.append({
             "role": "assistant",
-            "content": message.content,
+            "content": message.content or "",
             "tool_calls": [
                 {"id": tc.id, "type": "function",
                  "function": {"name": tc.function.name, "arguments": tc.function.arguments}}
@@ -471,18 +468,21 @@ def chat_with_groq(conversation_history: list, status_callback=None) -> str:
         if status_callback:
             status_callback("✍️ Generating your weather summary...")
 
+        # IMPORTANT: Do NOT pass tools=OPENAI_TOOLS in 2nd call, so Groq returns generated text instead of empty content
         messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation_history
         final = client.chat.completions.create(
-            model="qwen/qwen3.6-27b", max_tokens=1024, tools=OPENAI_TOOLS, messages=messages
+            model="qwen/qwen3.6-27b", max_tokens=2048, messages=messages
         )
-        text = final.choices[0].message.content or ""
-        conversation_history.append({"role": "assistant", "content": text})
-        return text
+        raw_text = final.choices[0].message.content or ""
+        clean_text = re.sub(r'<think>.*?</think>', '', raw_text, flags=re.DOTALL).strip()
+        conversation_history.append({"role": "assistant", "content": clean_text})
+        return clean_text
 
     else:
-        text = message.content or ""
-        conversation_history.append({"role": "assistant", "content": text})
-        return text
+        raw_text = message.content or ""
+        clean_text = re.sub(r'<think>.*?</think>', '', raw_text, flags=re.DOTALL).strip()
+        conversation_history.append({"role": "assistant", "content": clean_text})
+        return clean_text
 
 
 # ============================================================================
@@ -557,12 +557,12 @@ lang_code, lang_inst, placeholder_txt = LANG_MAP[st.session_state.selected_langu
 
 st.markdown("""
 <style>
-/* Import Google Fonts: Outfit for Titles, Inter for Body */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Import Google Fonts: Outfit for Titles, Inter for Body, Noto Sans Telugu & Devanagari for Multilingual Support */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 
 /* Global Font Base */
-html, body, [class*="css"] {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+html, body, [class*="css"], [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] span, [data-testid="stMarkdownContainer"] div {
+    font-family: 'Inter', 'Noto Sans Telugu', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
 /* Custom Pointer Cursors */
