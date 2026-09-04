@@ -1,176 +1,140 @@
-# 🌤️ WeatherGPT — AI Weather Assistant
+# 🌤️ WeatherGPT — Conversational Weather Intelligence Platform
 
 > **Smart India Hackathon (SIH) 2026**
-> Conversational AI platform for weather forecasting, alerts, and climate information.
+> Multilingual AI Weather Assistant for Farmers, Citizens & Disaster Management.
+
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](http://localhost:8501)
+[![GitHub License](https://img.shields.io/badge/SIH-2026-blue)](https://github.com/nelliramyasri405-sys/WeatherGPT)
 
 ---
 
-## 🎯 What Is This?
+## 🎯 Project Overview
 
-WeatherGPT is a conversational AI that answers weather questions in natural language.
-Ask it anything — *"Will it rain in Vizianagaram tomorrow?"* — and it gives you an
-accurate, human-friendly answer powered by **real weather data**.
+**WeatherGPT** is a state-of-the-art conversational AI platform that delivers real-time weather forecasting, rain radar insights, agricultural advisories, and disaster alerts in multiple languages (**English, Telugu, Hindi**).
 
-### Core Principle
-
-> **The AI never invents weather numbers.**
-> All temperatures, rainfall, humidity, and forecasts come from the Open-Meteo API.
-> The AI's job is to understand your question and explain the real data clearly.
+### 🔒 Core Credibility Rule (Zero Hallucinations)
+> **The AI NEVER invents weather numbers.**  
+> 100% of weather metrics (temperature, rainfall sum, humidity, wind speed, UV index) come directly from live verified [Open-Meteo API](https://open-meteo.com/) responses. The LLM serves exclusively as the natural language interpretation layer.
 
 ---
 
-## 🏗️ Architecture (5-Stage Pipeline)
+## ✨ Features
 
-```
-User question (text)
-        ↓
-LLM Layer #1 — Parses intent, extracts city name
-        ↓
-Weather API — Fetches REAL data from Open-Meteo (free, no API key)
-        ↓
-LLM Layer #2 — Converts raw data into natural language answer
-        ↓
-Delivery — Text response in terminal
-```
+- 🌐 **Multilingual Voice & Text Support:** Seamless switching between **English**, **Telugu (తెలుగు)**, and **Hindi (हिंदी)** script.
+- 🔊 **Voice Audio Assistant:** Instant spoken audio advisories generated via gTTS.
+- 🌾 **Farmer Advisory Engine:** Tailored agricultural advice for crop sowing, harvesting risks, and pest impact based on live weather data.
+- 🚨 **Emergency Alert Simulator:** Live simulation of NDMA/IMD Severe Weather Warnings (Cyclones & Heatwaves).
+- 🎨 **Glassmorphic Interactive UI:** Custom fluid particle cursor, touch ripples, quick-city shortcuts, and atmospheric weather background.
+- ⚡ **High-Speed Caching:** `@st.cache_data` enabled for instant responses and low latency.
 
 ---
 
-## 🚀 Quick Start
+## 🛠️ Tech Stack
 
-### Prerequisites
-
-- **Python 3.10+** installed ([download here](https://www.python.org/downloads/))
-- An API key from **one** of:
-  - [Anthropic Claude](https://console.anthropic.com/) (recommended)
-  - [OpenAI GPT](https://platform.openai.com/api-keys)
-
-### Step 1 — Clone / Download the Project
-
-Download or clone this folder to your computer.
-
-### Step 2 — Create a Virtual Environment
-
-Open a terminal **in this project folder** and run:
-
-```bash
-# Create the virtual environment
-python -m venv venv
-
-# Activate it:
-# On Windows (PowerShell):
-.\venv\Scripts\Activate.ps1
-
-# On Windows (CMD):
-.\venv\Scripts\activate.bat
-
-# On Mac/Linux:
-source venv/bin/activate
-```
-
-You should see `(venv)` appear at the start of your terminal prompt.
-
-### Step 3 — Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### Step 4 — Set Your API Key
-
-Open the `.env` file in a text editor and replace the placeholder with your real key:
-
-```env
-# If using Anthropic Claude:
-ANTHROPIC_API_KEY=sk-ant-your-real-key-here
-
-# If using OpenAI GPT (uncomment and fill in):
-# OPENAI_API_KEY=sk-your-real-key-here
-```
-
-> ⚠️ **NEVER** share your `.env` file, commit it to Git, or paste your key in `.env.example`.
-> The `.gitignore` file protects `.env` from being uploaded.
-
-### Step 5 — Run WeatherGPT
-
-```bash
-python weathergpt_core.py
-```
-
-Then just type your weather questions!
+- **Frontend & Web Framework:** [Streamlit](https://streamlit.io/) (Python)
+- **AI Brain / LLM Engine:** [Groq Cloud](https://console.groq.com/) (`qwen/qwen3.6-27b`), Anthropic Claude 3.5 Sonnet, OpenAI GPT-4o-mini
+- **Weather Data API:** [Open-Meteo Global Forecast API](https://open-meteo.com/) (100% free, no key needed)
+- **Speech Synthesis:** `gTTS` (Google Text-to-Speech)
+- **Styling:** Custom CSS Glassmorphism + Google Fonts (`Outfit`, `Inter`, `Noto Sans Telugu`, `Noto Sans Devanagari`)
 
 ---
 
-## 💬 Example Conversations
+## 🚀 How to Deploy (Step-by-Step Guide)
 
-```
-You: Will it rain in Chennai tomorrow?
-🌤️ WeatherGPT: Based on the forecast for Chennai, there's a 72% chance of
-rain tomorrow with moderate rain expected. The high will be 33°C and the
-low 27°C. I'd recommend carrying an umbrella!
+### Option 1: Deploy on Streamlit Community Cloud (Recommended & 100% FREE)
 
-You: What about Mumbai?
-🌤️ WeatherGPT: In Mumbai, tomorrow looks partly cloudy with a 45% chance
-of rain. Temperatures will range from 26°C to 32°C...
+Deploying WeatherGPT on Streamlit Cloud takes less than 3 minutes:
 
-You: Should I sow paddy this week in Guntur?
-🌤️ WeatherGPT: Looking at the 3-day forecast for Guntur — temperatures
-are between 28-36°C with low rain probability (15%). These are dry
-conditions, so ensure irrigation is available if you proceed with sowing...
-```
+1. **Push your code to GitHub:** (Already complete!)
+   Repository: `https://github.com/nelliramyasri405-sys/WeatherGPT`
+
+2. **Sign in to Streamlit Cloud:**
+   - Go to [share.streamlit.io](https://share.streamlit.io/)
+   - Sign in with your GitHub account.
+
+3. **Create a New App:**
+   - Click **"New app"** -> **"Use existing repo"**.
+   - Select your Repository: `nelliramyasri405-sys/WeatherGPT`
+   - Select Branch: `main`
+   - Main file path: `app.py`
+
+4. **Add Your API Secrets:**
+   - Click **"Advanced settings..."** or go to your app settings -> **Secrets**.
+   - Paste your Groq API key (or Anthropic/OpenAI key):
+     ```toml
+     GROQ_API_KEY = "gsk_your_real_groq_key_here"
+     ```
+   - Click **Save**.
+
+5. **Deploy!**
+   - Click **"Deploy!"**. Your app will build automatically and give you a public live URL (e.g. `https://weathergpt.streamlit.app`).
 
 ---
 
-## 📁 Project Structure
+### Option 2: Run Locally on Your Computer
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/nelliramyasri405-sys/WeatherGPT.git
+   cd WeatherGPT
+   ```
+
+2. **Create & Activate a Virtual Environment:**
+   ```bash
+   # Windows (PowerShell)
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+
+   # Mac/Linux
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure Environment Variables:**
+   - Create a `.env` file in the project root:
+     ```env
+     GROQ_API_KEY=gsk_your_groq_api_key_here
+     ```
+
+5. **Launch the Application:**
+   - **Streamlit Web UI:**
+     ```bash
+     streamlit run app.py
+     ```
+     *Open `http://localhost:8501` in your browser.*
+
+   - **CLI Mode (Terminal):**
+     ```bash
+     python weathergpt_core.py
+     ```
+
+---
+
+## 📁 Repository Structure
 
 ```
-weatherGPT forcasting/
-├── weathergpt_core.py    # Main script — LLM + tool calling + Open-Meteo
+WeatherGPT/
+├── app.py                # Main Streamlit Web Application
+├── weathergpt_core.py    # CLI Core Engine & LLM pipeline
 ├── requirements.txt      # Python dependencies
-├── .env                  # YOUR API key (secret, never commit this)
-├── .env.example          # Template showing what .env should look like
-├── .gitignore            # Protects .env from being committed to Git
-└── README.md             # This file
+├── .env                  # API keys configuration (gitignored)
+├── .env.example          # Template for environment variables
+├── .gitignore            # Git protection rules
+├── assets/               # High-resolution weather assets & backgrounds
+│   ├── weather_bg.jpg
+│   ├── farmer_advisory.jpg
+│   └── disaster_radar.jpg
+└── README.md             # Project documentation & deployment guide
 ```
 
 ---
 
-## 🔧 Tech Stack
+## 👥 Team & License
 
-| Layer            | Tool                          | Notes                                          |
-|------------------|-------------------------------|-------------------------------------------------|
-| LLM              | Anthropic Claude / OpenAI GPT | Understands questions, narrates answers          |
-| Weather Data     | Open-Meteo API                | Free, no API key, real-time global forecasts     |
-| Language         | Python 3.10+                  | Simple, beginner-friendly                        |
-| Key Management   | python-dotenv + .env file     | Keeps API keys safe and out of code              |
-
----
-
-## 🔒 Security Rules
-
-1. **NEVER** put real API keys in `.env.example` or any code file
-2. **ALWAYS** use the `.env` file for real keys (it's gitignored)
-3. **NEVER** commit `.env` to Git — the `.gitignore` prevents this
-4. If you accidentally expose a key, **regenerate it immediately** at your provider's dashboard
-
----
-
-## 🗺️ Roadmap
-
-- [x] **Stage 1** — CLI core loop (LLM + tool calling + Open-Meteo) ← *You are here*
-- [ ] **Stage 2** — Streamlit chat UI
-- [ ] **Stage 3** — Multilingual support (Hindi, Telugu, Tamil, Bengali)
-- [ ] **Stage 4** — Simulated weather alerts (cyclone, flood, heatwave)
-- [ ] **Stage 5** — Voice input/output (stretch goal)
-- [ ] **Stage 6** — Polish, error handling, demo prep
-
----
-
-## 👥 Team
-
-WeatherGPT Team — Smart India Hackathon 2026
-
----
-
-## 📄 License
-
-Built for SIH 2026. For educational and demonstration purposes.
+- **Developed for:** Smart India Hackathon (SIH 2026)
+- **License:** Open-source for educational and demonstration purposes.
